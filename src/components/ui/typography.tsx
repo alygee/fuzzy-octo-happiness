@@ -39,10 +39,26 @@ const variantMap: Record<TypographyVariant, TypographyElement> = {
   overline: 'span',
 }
 
+const variantClassMap: Record<TypographyVariant, string> = {
+  h1: 'text-h1',
+  h2: 'text-h2',
+  h3: 'text-h3',
+  h4: 'text-h4',
+  h5: 'text-h5',
+  h6: 'text-h6',
+  subtitle1: 'text-subtitle1',
+  subtitle2: 'text-subtitle2',
+  body1: 'text-body1',
+  body2: 'text-body2',
+  input: 'text-input',
+  caption: 'text-caption',
+  overline: 'text-overline',
+}
+
 const Typography = React.forwardRef<HTMLElement, TypographyProps>(
   ({ className, variant = 'body1', as, ...props }, ref) => {
     const Component = (as || variantMap[variant] || 'p') as TypographyElement
-    const variantClass = `text-${variant}`
+    const variantClass = variantClassMap[variant] || 'text-body1'
     
     return React.createElement(
       Component,

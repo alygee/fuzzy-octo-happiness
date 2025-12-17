@@ -7,6 +7,21 @@ export default {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
+  safelist: [
+    'text-h1',
+    'text-h2',
+    'text-h3',
+    'text-h4',
+    'text-h5',
+    'text-h6',
+    'text-subtitle1',
+    'text-subtitle2',
+    'text-body1',
+    'text-body2',
+    'text-input',
+    'text-caption',
+    'text-overline',
+  ],
   prefix: "",
   theme: {
     screens: {
@@ -25,7 +40,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Futura PT', 'system-ui', 'sans-serif'],
+        sans: ['Jost', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         // Базовые стили для ≤480px (мобильные)
@@ -216,7 +231,7 @@ export default {
         },
         // Shadcn/ui compatibility
         border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
+        input: "hsl(var(--input) / 0.87)",
         ring: "hsl(var(--ring))",
         foreground: "hsl(var(--foreground))",
         destructive: {
@@ -239,6 +254,9 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      backgroundImage: {
+        "morning-light": "radial-gradient(157.77% 168.58% at 0% 2.5%, #EBE7F8 0%, #FDDAD8 100%)",
       },
       boxShadow: {
         "elevation-1": "0px 2px 8px 0px rgba(0, 0, 0, 0.05), 0px 0px 2px 0px rgba(0, 0, 0, 0.03)",

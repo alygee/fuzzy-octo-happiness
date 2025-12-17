@@ -109,13 +109,35 @@
     --destructive: var(--error);
     --destructive-foreground: 0 0% 100%;
     --border: var(--grey-300);
-    --input: var(--grey-300);
+    --input: 0 0% 0%;
     --ring: var(--primary);
     --radius: 0.5rem;
   }
 }
 
 @layer utilities {
+  /* Базовые стили типографики для всех экранов */
+  .text-caption {
+    font-size: 12px;
+    line-height: 12px;
+    letter-spacing: 0.4px;
+    font-weight: 400;
+  }
+  
+  .text-input {
+    font-size: 16px;
+    line-height: 16px;
+    letter-spacing: 0.0px;
+    font-weight: 400;
+  }
+  
+  .text-overline {
+    font-size: 13px;
+    line-height: 16px;
+    letter-spacing: 1.0px;
+    font-weight: 400;
+  }
+
   /* Адаптивные стили типографики для >480px */
   @media (min-width: 481px) {
     .text-h1 {
@@ -187,6 +209,6 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Futura PT', system-ui, sans-serif;
+    font-family: 'Jost', system-ui, sans-serif;
   }
 }
