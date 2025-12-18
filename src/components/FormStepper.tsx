@@ -1,74 +1,36 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Check } from "lucide-react";
 import { Typography } from "./ui/typography";
-import { CrowdIcon, InfoIcon, LocationIcon, ShieldIcon } from "./icons";
-import { MultiSelect } from "@/components/ui/multi-select"
+import type { FilterResponse, InsuranceRecord } from "@/types/api";
+import type { FormData, TouchedFields } from "@/types/form";
+import { TOTAL_STEPS, cities } from "@/constants/form";
+import type { MultiSelectOption } from "@/components/ui/multi-select";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import offerImage from "@/assets/offer.png";
-import { Select } from "@/components/ui/select";
-import { FormError } from "@/components/ui/form-error";
-import { cn } from "@/lib/utils";
-
-interface FormData {
-  step1: {
-    numberOfEmployees: string;
-    email: string;
-    phone: string;
-  };
-  step2: {
-    company: string;
-    position: string;
-  };
-  step3: {
-    message: string;
-  };
-}
-
-interface TouchedFields {
-  step1: {
-    numberOfEmployees: boolean;
-    coverageLevel: boolean;
-    selectedCities: boolean;
-  };
-}
-
-interface FormErrors {
-  step1: {
-    numberOfEmployees?: string;
-    coverageLevel?: string;
-    selectedCities?: string;
-  };
-}
-
-const TOTAL_STEPS = 3;
-
-const cities = [
-  { value: "moscow", label: "Москва" },
-  { value: "spb", label: "Санкт-Петербург" },
-  { value: "novosibirsk", label: "Новосибирск" },
-  { value: "krasnoyarsk", label: "Красноярск" },
-]
-
-const coverageLevels = [
-  { value: "Базовый", label: "Базовый" },
-  { value: "Комфорт", label: "Комфорт" },
-  { value: "Премиум", label: "Премиум" },
-]
+  StepIndicator,
+  Step1Form,
+  Step2Form,
+  Step3Form,
+  LoadingScreen,
+  OfferCard,
+  StepNavigation,
+} from "./form";
+import { validateStep1, isStepValid } from "@/utils/validation";
+import { fetchFilterData } from "@/api/filter";
 
 export function FormStepper() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedCities, setSelectedCities] = useState<string[]>([])
-  const [coverageLevel, setCoverageLevel] = useState<string>('Базовый')
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [coverageLevel, setCoverageLevel] = useState<string>("Базовый");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingRecalculate, setIsLoadingRecalculate] = useState(false);
+  const [apiData, setApiData] = useState<FilterResponse | null>(null);
+  const [selectedOffer, setSelectedOffer] = useState<{
+    insurerName: string;
+    city: string;
+    record: InsuranceRecord;
+  } | null>(null);
+  const [citiesList, setCitiesList] = useState<MultiSelectOption[]>(cities);
   const [formData, setFormData] = useState<FormData>({
     step1: {
       numberOfEmployees: "",
@@ -91,27 +53,7 @@ export function FormStepper() {
     },
   });
 
-  const progress = (currentStep / TOTAL_STEPS) * 100;
-
-  const validateStep1 = (): FormErrors['step1'] => {
-    const errors: FormErrors['step1'] = {}
-    
-    if (!formData.step1.numberOfEmployees.trim()) {
-      errors.numberOfEmployees = "Обязательное поле"
-    }
-    
-    if (!coverageLevel) {
-      errors.coverageLevel = "Выберите уровень покрытия"
-    }
-    
-    if (selectedCities.length === 0) {
-      errors.selectedCities = "Выберите хотя бы один регион"
-    }
-    
-    return errors
-  }
-
-  const errors = validateStep1()
+  const errors = validateStep1(formData, coverageLevel, selectedCities);
 
   const handleInputChange = (
     step: keyof FormData,
@@ -127,7 +69,15 @@ export function FormStepper() {
     }));
   };
 
-  const handleBlur = (field: keyof TouchedFields['step1']) => {
+  const handleStep1InputChange = (field: string, value: string) => {
+    handleInputChange("step1", field, value);
+  };
+
+  const handleStep3InputChange = (field: string, value: string) => {
+    handleInputChange("step3", field, value);
+  };
+
+  const handleBlur = (field: keyof TouchedFields["step1"]) => {
     setTouched((prev) => ({
       ...prev,
       step1: {
@@ -138,7 +88,7 @@ export function FormStepper() {
   };
 
   const handleCoverageLevelChange = (value: string) => {
-    setCoverageLevel(value)
+    setCoverageLevel(value);
     if (!touched.step1.coverageLevel) {
       setTouched((prev) => ({
         ...prev,
@@ -146,12 +96,12 @@ export function FormStepper() {
           ...prev.step1,
           coverageLevel: true,
         },
-      }))
+      }));
     }
-  }
+  };
 
   const handleCitiesChange = (value: string[]) => {
-    setSelectedCities(value)
+    setSelectedCities(value);
     if (!touched.step1.selectedCities) {
       setTouched((prev) => ({
         ...prev,
@@ -159,11 +109,11 @@ export function FormStepper() {
           ...prev.step1,
           selectedCities: true,
         },
-      }))
+      }));
     }
-  }
+  };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1) {
       // Помечаем все поля как touched при попытке перейти на следующий шаг
       setTouched({
@@ -173,13 +123,30 @@ export function FormStepper() {
           selectedCities: true,
         },
       });
-      
+
       // Проверяем валидность перед переходом
-      if (!isStepValid(1)) {
+      if (!isStepValid(1, formData, errors, coverageLevel, selectedCities)) {
         return;
       }
+
+      // Отправляем запрос на API
+      setIsLoading(true);
+      try {
+        const data = await fetchFilterData({
+          cities: selectedCities,
+          level: coverageLevel,
+          count: formData.step1.numberOfEmployees,
+        });
+        setApiData(data);
+        console.log("API Response:", data);
+      } catch (error) {
+        console.error("Ошибка при отправке запроса:", error);
+        // Можно добавить обработку ошибок, например, показать уведомление
+      } finally {
+        setIsLoading(false);
+      }
     }
-    
+
     if (currentStep < TOTAL_STEPS) {
       setCurrentStep(currentStep + 1);
     }
@@ -191,277 +158,177 @@ export function FormStepper() {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // Здесь можно добавить отправку данных на сервер
-    alert("Форма успешно отправлена!");
-  };
+  const handleRecalculate = async () => {
+    // Проверяем валидность данных перед запросом
+    if (!isStepValid(1, formData, errors, coverageLevel, selectedCities)) {
+      return;
+    }
 
-  const isStepValid = (step: number): boolean => {
-    switch (step) {
-      case 1:
-        return (
-          formData.step1.numberOfEmployees.trim() !== "" &&
-          coverageLevel !== "" &&
-          selectedCities.length > 0 &&
-          !errors.numberOfEmployees &&
-          !errors.coverageLevel &&
-          !errors.selectedCities
-        );
-      case 2:
-        return (
-          formData.step2.company.trim() !== "" &&
-          formData.step2.position.trim() !== ""
-        );
-      case 3:
-        return formData.step3.message.trim() !== "";
-      default:
-        return false;
+    setIsLoadingRecalculate(true);
+    try {
+      const data = await fetchFilterData({
+        cities: selectedCities,
+        level: coverageLevel,
+        count: formData.step1.numberOfEmployees,
+      });
+      setApiData(data);
+      console.log("API Response (Recalculate):", data);
+    } catch (error) {
+      console.error("Ошибка при пересчете:", error);
+      // Можно добавить обработку ошибок, например, показать уведомление
+    } finally {
+      setIsLoadingRecalculate(false);
     }
   };
 
-  const renderStepIndicator = () => {
-    return (
-      <div className="flex items-center justify-center mb-8">
-        {Array.from({ length: TOTAL_STEPS }).map((_, index) => {
-          const stepNumber = index + 1;
-          const isCompleted = stepNumber < currentStep;
-          const isCurrent = stepNumber === currentStep;
+  const handleSelectOffer = (
+    insurerName: string,
+    city: string,
+    record: InsuranceRecord,
+  ) => {
+    setSelectedOffer({
+      insurerName,
+      city,
+      record,
+    });
+    setCurrentStep(3);
+  };
 
-          return (
-            <div key={stepNumber} className="flex items-center">
-              <div
-                className={`
-                  flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all
-                  ${isCompleted
-                    ? "bg-primary border-primary text-primary-foreground"
-                    : isCurrent
-                      ? "border-primary text-primary bg-background"
-                      : "border-muted text-muted-foreground bg-background"
-                  }
-                `}
-              >
-                {isCompleted ? (
-                  <Check className="w-5 h-5" />
-                ) : (
-                  <span className="font-semibold">{stepNumber}</span>
-                )}
-              </div>
-              {index < TOTAL_STEPS - 1 && (
-                <div
-                  className={`
-                    w-16 h-1 mx-2 transition-all
-                    ${isCompleted ? "bg-primary" : "bg-muted"}
-                  `}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
+  const handleCreateCity = (label: string): string => {
+    // Генерировать value из label (lowercase с заменой пробелов на дефисы)
+    const value = label.toLowerCase().replace(/\s+/g, '-')
+    
+    // Проверить, что такого value еще нет
+    if (!citiesList.some(c => c.value === value)) {
+      const newCity = { value, label }
+      setCitiesList([...citiesList, newCity])
+      // Автоматически выбрать новый город
+      setSelectedCities([...selectedCities, value])
+      return value
+    }
+    
+    // Если уже существует, вернуть существующий value
+    return value
+  }
+
+  const handleSubmit = () => {
+    console.log("Form submitted:", formData);
+    console.log("Selected offer:", selectedOffer);
+    // Здесь можно добавить отправку данных на сервер
+    alert("Форма успешно отправлена!");
   };
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                <div className="flex items-center gap-2.5 tracking-wide">
-                  <CrowdIcon className="ml-1" />
-                  <span>Количество сотрудников</span>
-                </div>
-              </Label>
-              <Input
-                id="numberOfEmployees"
-                type="number"
-                placeholder="Какое количество сотрудников в компании?"
-                value={formData.step1.numberOfEmployees}
-                onChange={(e) =>
-                  handleInputChange("step1", "numberOfEmployees", e.target.value)
-                }
-                onBlur={() => handleBlur("numberOfEmployees")}
-                className={cn(
-                  touched.step1.numberOfEmployees && errors.numberOfEmployees && "border-error focus-visible:ring-error placeholder:text-error"
-                )}
-              />
-              {touched.step1.numberOfEmployees && errors.numberOfEmployees && (
-                <FormError>{errors.numberOfEmployees}</FormError>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">
-                <div className="flex items-center gap-2.5 tracking-wide">
-                  <ShieldIcon className="ml-1" />
-                  <span>Уровень покрытия </span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button>
-                          <InfoIcon size={20} />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xl">
-                        <p className="text-subtitle1">Уровень покрытия</p>
-                        <br />
-                        <ul>
-                          <li>- Базовый: основное покрытие, включая обязательные медицинские услуги</li>
-                          <li>- Комфорт: Расширенная помощь, включая амбулаторное лечение и доп. услуги</li>
-                          <li>- Премиум: Полный пакет с приоритетным обслуживанием и доп. опциями</li>
-                        </ul>
-
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </Label>
-              <div
-                className={cn(
-                  touched.step1.coverageLevel && errors.coverageLevel && "[&_input]:border-error [&_input]:focus-visible:ring-error [&_input]:placeholder:text-error"
-                )}
-              >
-                <Select
-                  options={coverageLevels}
-                  value={coverageLevel}
-                  onChange={handleCoverageLevelChange}
-                  placeholder="Выберите уровень покрытия"
-                />
-              </div>
-              {touched.step1.coverageLevel && errors.coverageLevel && (
-                <FormError>{errors.coverageLevel}</FormError>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">
-                <div className="flex items-center gap-2.5 tracking-wide">
-                  <LocationIcon className="ml-1" />
-                  <span>Регион обслуживания</span>
-                </div>
-              </Label>
-              <div
-                className={cn(
-                  touched.step1.selectedCities && errors.selectedCities && "[&_div]:border-error [&_div]:focus-within:ring-error [&_input]:placeholder:text-error"
-                )}
-              >
-                <MultiSelect
-                  options={cities}
-                  value={selectedCities}
-                  onChange={handleCitiesChange}
-                  placeholder="Выберите город или регион"
-                  onBlur={() => handleBlur("selectedCities")}
-                />
-              </div>
-              {touched.step1.selectedCities && errors.selectedCities && (
-                <FormError>{errors.selectedCities}</FormError>
-              )}
-            </div>
-          </div>
+          <Step1Form
+            formData={formData}
+            touched={touched}
+            errors={errors}
+            selectedCities={selectedCities}
+            coverageLevel={coverageLevel}
+            cities={citiesList}
+            onCreateCity={handleCreateCity}
+            onInputChange={handleStep1InputChange}
+            onBlur={handleBlur}
+            onCoverageLevelChange={handleCoverageLevelChange}
+            onCitiesChange={handleCitiesChange}
+          />
         );
-
       case 2:
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="company">Компания *</Label>
-              <Input
-                id="company"
-                placeholder="Название компании"
-                value={formData.step2.company}
-                onChange={(e) =>
-                  handleInputChange("step2", "company", e.target.value)
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="position">Должность *</Label>
-              <Input
-                id="position"
-                placeholder="Ваша должность"
-                value={formData.step2.position}
-                onChange={(e) =>
-                  handleInputChange("step2", "position", e.target.value)
-                }
-              />
-            </div>
-          </div>
+          <Step2Form
+            formData={formData}
+            touched={touched}
+            errors={errors}
+            selectedCities={selectedCities}
+            coverageLevel={coverageLevel}
+            apiData={apiData}
+            isLoadingRecalculate={isLoadingRecalculate}
+            onInputChange={handleStep1InputChange}
+            onBlur={handleBlur}
+            onCoverageLevelChange={handleCoverageLevelChange}
+            onCitiesChange={handleCitiesChange}
+            onRecalculate={handleRecalculate}
+            onSelectOffer={handleSelectOffer}
+          />
         );
-
       case 3:
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="message">Сообщение *</Label>
-              <textarea
-                id="message"
-                className="flex min-h-[120px] w-full rounded-2xl border border-input bg-background px-4 py-5 text-input ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Расскажите о вашем проекте..."
-                value={formData.step3.message}
-                onChange={(e) =>
-                  handleInputChange("step3", "message", e.target.value)
-                }
-              />
-            </div>
-          </div>
+          <Step3Form
+            formData={formData}
+            onInputChange={handleStep3InputChange}
+          />
         );
-
       default:
         return null;
     }
   };
 
+  const getStepTitle = () => {
+    if (currentStep === 1) {
+      return "1. Информация о компании";
+    }
+    if (currentStep === 2) {
+      return "2. Выберите подходящее предложение";
+    }
+    return "3. Завершение";
+  };
+
   return (
     <div className="w-full max-w-6xl mx-auto">
-      {renderStepIndicator()}
-      <Typography className="text-h6">1. Информация о компании</Typography>
-      <Progress value={progress} className="mb-6" />
-      <div className="flex flex-col md:flex-row gap-4">
-        <Card className="w-full md:w-1/2">
-          <CardContent>
-            <div className="space-y-2">
-              {renderStepContent()}
-              <div className="flex justify-between pt-4">
-                {currentStep !== 1 && (
-                  <Button variant="text" size="large" onClick={handlePrevious}>
-                    Назад
-                  </Button>
-                )}
-                {currentStep < TOTAL_STEPS ? (
-                  <Button
-                    className="w-full text-white"
-                    variant="solid"
-                    size="large"
-                    onClick={handleNext}
-                    disabled={!isStepValid(currentStep)}
-                  >
-                    Далее
-                  </Button>
-                ) : (
-                  <Button
-                    variant="solid"
-                    size="large"
-                    onClick={handleSubmit}
-                    disabled={!isStepValid(currentStep)}
-                  >
-                    Отправить
-                  </Button>
-                )}
+      <StepIndicator currentStep={currentStep} />
+      <Typography className="text-h6">{getStepTitle()}</Typography>
+      <Progress
+        totalSteps={TOTAL_STEPS}
+        currentStep={currentStep}
+        className="mb-6"
+      />
+
+      {(isLoading && currentStep === 1) || isLoadingRecalculate ? (
+        <LoadingScreen />
+      ) : currentStep === 1 ? (
+        <div className="flex flex-col md:flex-row gap-4">
+          <Card className="w-full md:w-1/2">
+            <CardContent>
+              <div className="space-y-2">
+                {renderStepContent()}
+                <StepNavigation
+                  currentStep={currentStep}
+                  isLoading={isLoading}
+                  isValid={isStepValid(
+                    currentStep,
+                    formData,
+                    errors,
+                    coverageLevel,
+                    selectedCities,
+                  )}
+                  onPrevious={handlePrevious}
+                  onNext={handleNext}
+                  onSubmit={handleSubmit}
+                />
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card
-          className="w-full md:w-1/2 bg-morning-light"
-        >
-          <CardContent className="flex items-center justify-center w-full h-full">
-            <img
-              src={offerImage}
-              alt="Offer"
-            />
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+          <OfferCard />
+        </div>
+      ) : currentStep === 2 ? (
+        <div className="space-y-2">
+          {renderStepContent()}
+        </div>
+      ) : (
+        <div className="flex flex-col md:flex-row gap-4">
+          <Card className="w-full md:w-1/2">
+            <CardContent>
+              <div className="space-y-2">
+                {renderStepContent()}
+              </div>
+            </CardContent>
+          </Card>
+          <OfferCard />
+        </div>
+      )}
     </div>
   );
 }

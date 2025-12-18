@@ -28,3 +28,4 @@ export const InfoIcon = React.forwardRef<SVGSVGElement, InfoIconProps>(
 
 InfoIcon.displayName = "InfoIcon"
 
+

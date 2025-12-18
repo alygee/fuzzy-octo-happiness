@@ -17,11 +17,13 @@ export interface MultiSelectProps {
   className?: string
   disabled?: boolean
   searchable?: boolean
+  creatable?: boolean
+  onCreateOption?: (label: string) => string | null
 }
 
 export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
   ({ 
-    options, 
+    options = [], 
     value = [], 
     onChange, 
     onBlur,
@@ -29,6 +31,8 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
     className,
     disabled = false,
     searchable = true,
+    creatable = false,
+    onCreateOption,
     ...props 
   }, ref) => {
     const [isOpen, setIsOpen] = React.useState(false)
@@ -43,11 +47,36 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
 
     const filteredOptions = React.useMemo(() => {
       const unselected = options.filter(opt => !value.includes(opt.value))
-      if (!searchable || !searchQuery) return unselected
-      return unselected.filter(opt =>
-        opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+      
+      if (!searchable || !searchQuery.trim()) {
+        return unselected
+      }
+      
+      const queryLower = searchQuery.toLowerCase().trim()
+      const filtered = unselected.filter(opt =>
+        opt.label.toLowerCase().includes(queryLower)
       )
-    }, [options, searchQuery, searchable, value])
+      
+      // Если включен creatable и есть поисковый запрос, которого нет в опциях
+      if (creatable && queryLower.length > 0) {
+        const exists = options.some(opt => 
+          opt.label.toLowerCase() === queryLower
+        )
+        
+        if (!exists) {
+          // Добавляем виртуальную опцию для создания новой
+          return [
+            ...filtered,
+            { 
+              value: `__create__${searchQuery.trim()}`, 
+              label: `Создать: "${searchQuery.trim()}"`,
+            }
+          ]
+        }
+      }
+      
+      return filtered
+    }, [options, searchQuery, searchable, value, creatable])
 
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
@@ -108,6 +137,26 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
     }, [isOpen])
 
     const handleSelect = (optionValue: string) => {
+      // Проверяем, является ли это опцией создания
+      if (optionValue.startsWith('__create__')) {
+        // Извлекаем label из value
+        const newLabel = optionValue.replace('__create__', '').trim()
+        
+        if (newLabel && onCreateOption) {
+          // Вызываем callback для создания новой опции
+          const newValue = onCreateOption(newLabel)
+          
+          if (newValue !== null) {
+            // Автоматически выбираем новую опцию
+            onChange?.([...value, newValue])
+          }
+        }
+        
+        setSearchQuery("")
+        return
+      }
+      
+      // Обычная логика выбора
       if (value.includes(optionValue)) {
         onChange?.(value.filter(v => v !== optionValue))
       } else {
@@ -153,7 +202,7 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
         <div 
           ref={containerRef}
           className={cn(
-            "flex w-full min-h-[56px] rounded-2xl border border-input bg-background p-4",
+            "flex w-full min-h-[56px] rounded-2xl border border-gray-300 bg-background p-4",
             "ring-offset-background",
             "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:border-0",
             "disabled:cursor-not-allowed disabled:opacity-50",
@@ -241,23 +290,29 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
           >
             {filteredOptions.length > 0 ? (
               <ul className="py-1">
-                {filteredOptions.map((option) => (
-                  <li
-                    key={option.value}
-                    onMouseDown={(e) => {
-                      e.preventDefault() // Предотвращаем blur на input
-                      handleSelect(option.value)
-                    }}
-                    className={cn(
-                      "px-4 py-3 cursor-pointer",
-                      "text-body1 text-text-primary",
-                      "hover:bg-action-hover",
-                      "transition-colors"
-                    )}
-                  >
-                    {option.label}
-                  </li>
-                ))}
+                {filteredOptions.map((option) => {
+                  const isCreateOption = option.value.startsWith('__create__')
+                  return (
+                    <li
+                      key={option.value}
+                      onMouseDown={(e) => {
+                        e.preventDefault() // Предотвращаем blur на input
+                        handleSelect(option.value)
+                      }}
+                      className={cn(
+                        "px-4 py-3 cursor-pointer",
+                        "text-body1",
+                        "hover:bg-action-hover",
+                        "transition-colors",
+                        isCreateOption
+                          ? "text-primary font-medium"
+                          : "text-text-primary"
+                      )}
+                    >
+                      {option.label}
+                    </li>
+                  )
+                })}
               </ul>
             ) : (
               <div className="px-4 py-3 text-body2 text-text-secondary text-center">

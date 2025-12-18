@@ -110,7 +110,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             disabled={disabled}
             readOnly={!searchable}
             className={cn(
-              "flex w-full rounded-2xl border border-input bg-background px-4 py-4 text-input",
+              "flex w-full rounded-2xl border border-gray-300 bg-background px-4 py-4 text-input",
               "ring-offset-background placeholder:text-muted-foreground",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:border-0",
               "disabled:cursor-not-allowed disabled:opacity-50",

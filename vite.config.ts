@@ -18,6 +18,16 @@ export default defineConfig(({ command, mode }) => {
           "@": path.resolve(__dirname, "./src"),
         },
       },
+      server: {
+        proxy: {
+          '/api/filter': {
+            target: 'https://kubiki.ai',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/api\/filter/, '/wp-json/dmc/v1/filter'),
+            secure: true,
+          },
+        },
+      },
     }
   }
   
