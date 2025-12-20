@@ -244,6 +244,8 @@ export function FormStepper() {
             errors={errors}
             selectedCities={selectedCities}
             coverageLevel={coverageLevel}
+            cities={citiesList}
+            onCreateCity={handleCreateCity}
             apiData={apiData}
             isLoadingRecalculate={isLoadingRecalculate}
             onInputChange={handleStep1InputChange}

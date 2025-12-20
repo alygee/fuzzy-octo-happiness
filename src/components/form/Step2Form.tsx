@@ -2,6 +2,7 @@ import { Step1Form } from "./Step1Form";
 import { InsuranceCards } from "./InsuranceCards";
 import type { FormData, TouchedFields, FormErrors } from "@/types/form";
 import type { FilterResponse, InsuranceRecord } from "@/types/api";
+import type { MultiSelectOption } from "@/components/ui/multi-select";
 import { Card, CardContent } from "@/components//ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components//ui/loader";
@@ -12,6 +13,8 @@ interface Step2FormProps {
   errors: FormErrors["step1"];
   selectedCities: string[];
   coverageLevel: string;
+  cities: MultiSelectOption[];
+  onCreateCity?: (label: string) => string | null;
   apiData: FilterResponse | null;
   isLoadingRecalculate: boolean;
   onInputChange: (field: string, value: string) => void;
@@ -28,6 +31,8 @@ export function Step2Form({
   errors,
   selectedCities,
   coverageLevel,
+  cities,
+  onCreateCity,
   apiData,
   isLoadingRecalculate,
   onInputChange,
@@ -50,6 +55,8 @@ export function Step2Form({
                 errors={errors}
                 selectedCities={selectedCities}
                 coverageLevel={coverageLevel}
+                cities={cities}
+                onCreateCity={onCreateCity}
                 onInputChange={onInputChange}
                 onBlur={onBlur}
                 onCoverageLevelChange={onCoverageLevelChange}

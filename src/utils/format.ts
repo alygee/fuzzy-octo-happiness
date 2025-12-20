@@ -17,3 +17,4 @@ export function parsePriceString(priceString: string): number {
   return parseFloat(priceString.replace(",", "."));
 }
 
+
