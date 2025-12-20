@@ -24,7 +24,8 @@ export function validateStep1(
 
 export function validateStep3Order(
   formData: FormData,
-  coverageLevel: string
+  coverageLevel: string,
+  selectedCities: string[]
 ): FormErrors['step3'] {
   const errors: FormErrors['step3'] = {};
   
@@ -56,6 +57,10 @@ export function validateStep3Order(
   
   if (!coverageLevel) {
     errors.coverageLevel = "Выберите уровень покрытия";
+  }
+  
+  if (selectedCities.length === 0) {
+    errors.serviceRegion = "Выберите хотя бы один регион обслуживания";
   }
   
   return errors;

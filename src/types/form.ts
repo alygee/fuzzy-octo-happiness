@@ -37,6 +37,7 @@ export interface TouchedFields {
     workEmail?: boolean;
     workPhone?: boolean;
     coverageLevel?: boolean;
+    serviceRegion?: boolean;
     callbackName?: boolean;
     callbackPhone?: boolean;
   };
@@ -55,6 +56,7 @@ export interface FormErrors {
     workEmail?: string;
     workPhone?: string;
     coverageLevel?: string;
+    serviceRegion?: string;
     callbackName?: string;
     callbackPhone?: string;
   };

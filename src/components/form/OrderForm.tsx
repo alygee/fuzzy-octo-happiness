@@ -1,15 +1,18 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
 import { Card, CardContent } from "../ui/card";
 import { cn } from "@/lib/utils";
 import type { FormData, FormErrors, TouchedFields } from "@/types/form";
+import type { MultiSelectOption } from "@/components/ui/multi-select";
 import { SelectedInsurerCard } from "./SelectedInsurerCard";
 import { getInsurerLogo } from "@/utils/insurerLogos";
 import { handlePhoneChange } from "@/utils/phoneMask";
 import { coverageLevels } from "@/constants/form";
+import { validateStep3Order } from "@/utils/validation";
 
 interface OrderFormProps {
   formData: FormData;
@@ -17,11 +20,14 @@ interface OrderFormProps {
   totalPrice: number;
   coverageLevel: string;
   numberOfEmployees: string;
-  serviceRegion: string;
+  selectedCities: string[];
+  cities: MultiSelectOption[];
+  onCreateCity?: (label: string) => string | null;
   errors?: FormErrors['step3'];
   touched?: TouchedFields['step3'];
   onInputChange: (field: string, value: string) => void;
   onCoverageLevelChange?: (value: string) => void;
+  onCitiesChange?: (value: string[]) => void;
   onBlur?: (field: keyof NonNullable<TouchedFields['step3']>) => void;
   onSubmit: () => void;
 }
@@ -32,11 +38,14 @@ export function OrderForm({
   totalPrice,
   coverageLevel,
   numberOfEmployees,
-  serviceRegion,
+  selectedCities,
+  cities,
+  onCreateCity,
   errors,
   touched,
   onInputChange,
   onCoverageLevelChange,
+  onCitiesChange,
   onBlur,
   onSubmit,
 }: OrderFormProps) {
@@ -49,6 +58,48 @@ export function OrderForm({
     if (onBlur && touched && !touched.coverageLevel) {
       onBlur('coverageLevel');
     }
+  };
+
+  const handleCitiesChange = (value: string[]) => {
+    if (onCitiesChange) {
+      onCitiesChange(value);
+    }
+    if (onBlur && touched && !touched.serviceRegion) {
+      onBlur('serviceRegion');
+    }
+  };
+
+  const handleSubmit = () => {
+    // Выполняем валидацию
+    const validationErrors = validateStep3Order(formData, coverageLevel, selectedCities);
+    
+    // Помечаем все поля как touched, чтобы показать ошибки
+    const allFields: Array<keyof NonNullable<TouchedFields['step3']>> = [
+      'organizationName',
+      'inn',
+      'responsiblePerson',
+      'workEmail',
+      'workPhone',
+      'coverageLevel',
+      'serviceRegion',
+    ];
+    
+    allFields.forEach((field) => {
+      if (onBlur && (!touched || !touched[field])) {
+        onBlur(field);
+      }
+    });
+    
+    // Проверяем, есть ли ошибки валидации
+    const hasErrors = validationErrors && Object.keys(validationErrors).length > 0;
+    
+    // Если есть ошибки, не вызываем onSubmit
+    if (hasErrors) {
+      return;
+    }
+    
+    // Если ошибок нет, вызываем onSubmit
+    onSubmit();
   };
 
   return (
@@ -198,14 +249,28 @@ export function OrderForm({
 
             <div className="space-y-2">
               <Label htmlFor="serviceRegion">Регион обслуживания</Label>
-              <Input id="serviceRegion" type="text" value={serviceRegion} />
+              <MultiSelect
+                options={cities}
+                value={selectedCities}
+                onChange={handleCitiesChange}
+                placeholder="Выберите регионы обслуживания"
+                creatable={true}
+                onCreateOption={onCreateCity}
+                closeOnSelect={false}
+                className={cn(
+                  touched?.serviceRegion && errors?.serviceRegion && "border-error"
+                )}
+              />
+              {touched?.serviceRegion && errors?.serviceRegion && (
+                <FormError>{errors.serviceRegion}</FormError>
+              )}
             </div>
 
             <div className="flex justify-end pt-4">
               <Button
                 variant="solid"
                 size="large"
-                onClick={onSubmit}
+                onClick={handleSubmit}
                 className="text-white"
               >
                 Отправить заявку

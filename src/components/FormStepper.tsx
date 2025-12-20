@@ -63,7 +63,7 @@ export function FormStepper() {
 
   const errors = validateStep1(formData, coverageLevel, selectedCities);
   const step3Errors = step3Mode === "order" 
-    ? validateStep3Order(formData, coverageLevel)
+    ? validateStep3Order(formData, coverageLevel, selectedCities)
     : step3Mode === "callback"
     ? validateStep3Callback(formData)
     : null;
@@ -114,6 +114,13 @@ export function FormStepper() {
     setCoverageLevel(value);
     if (!touched.step3?.coverageLevel) {
       handleStep3Blur("coverageLevel");
+    }
+  };
+
+  const handleStep3CitiesChange = (value: string[]) => {
+    setSelectedCities(value);
+    if (!touched.step3?.serviceRegion) {
+      handleStep3Blur("serviceRegion");
     }
   };
 
@@ -307,10 +314,13 @@ export function FormStepper() {
             coverageLevel={coverageLevel}
             selectedCities={selectedCities}
             numberOfEmployees={formData.step1.numberOfEmployees}
+            cities={citiesList}
+            onCreateCity={handleCreateCity}
             errors={step3Errors}
             touched={touched.step3}
             onInputChange={handleStep3InputChange}
             onCoverageLevelChange={handleStep3CoverageLevelChange}
+            onCitiesChange={handleStep3CitiesChange}
             onBlur={handleStep3Blur}
             onSubmit={handleSubmit}
             onBackToOffers={handleBackToOffers}

@@ -19,6 +19,7 @@ export interface MultiSelectProps {
   searchable?: boolean;
   creatable?: boolean;
   onCreateOption?: (label: string) => string | null;
+  closeOnSelect?: boolean; // Если false, dropdown останется открытым после выбора опции
 }
 
 export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
@@ -34,6 +35,7 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
       searchable = true,
       creatable = false,
       onCreateOption,
+      closeOnSelect = false,
       ...props
     },
     ref,
@@ -117,7 +119,6 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
           return; // Фокус остался внутри компонента
         }
 
-        setIsOpen(false);
         setSearchQuery("");
         // Создаем синтетическое событие для onBlur
         if (onBlur && containerRef.current) {
@@ -153,6 +154,16 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
           }
         }
 
+        // Если closeOnSelect = true, закрываем dropdown после создания опции
+        if (closeOnSelect) {
+          setIsOpen(false);
+        } else {
+          // Фокусируемся обратно на input, чтобы dropdown оставался открытым
+          setTimeout(() => {
+            setIsOpen(true);
+            inputRef.current?.focus();
+          }, 0);
+        }
         setSearchQuery("");
         return;
       }
@@ -164,6 +175,17 @@ export const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
         onChange?.([...value, optionValue]);
       }
       setSearchQuery("");
+
+      // Если closeOnSelect = false, оставляем dropdown открытым
+      if (closeOnSelect) {
+        setIsOpen(false);
+      } else {
+        // Фокусируемся обратно на input, чтобы dropdown оставался открытым
+        setTimeout(() => {
+          setIsOpen(true);
+          inputRef.current?.focus();
+        }, 0);
+      }
     };
 
     const handleRemove = (optionValue: string, e: React.MouseEvent) => {

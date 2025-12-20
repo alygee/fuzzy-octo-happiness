@@ -3,7 +3,12 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { FormError } from "@/components/ui/form-error";
-import { CrowdIcon, InfoIcon, LocationIcon, ShieldIcon } from "@/components/icons";
+import {
+  CrowdIcon,
+  InfoIcon,
+  LocationIcon,
+  ShieldIcon,
+} from "@/components/icons";
 import {
   Tooltip,
   TooltipContent,
@@ -18,13 +23,13 @@ import type { MultiSelectOption } from "@/components/ui/multi-select";
 interface Step1FormProps {
   formData: FormData;
   touched: TouchedFields;
-  errors: FormErrors['step1'];
+  errors: FormErrors["step1"];
   selectedCities: string[];
   coverageLevel: string;
   cities: MultiSelectOption[];
   onCreateCity?: (label: string) => string | null;
   onInputChange: (field: string, value: string) => void;
-  onBlur: (field: keyof TouchedFields['step1']) => void;
+  onBlur: (field: keyof TouchedFields["step1"]) => void;
   onCoverageLevelChange: (value: string) => void;
   onCitiesChange: (value: string[]) => void;
 }
@@ -59,14 +64,16 @@ export function Step1Form({
           onChange={(e) => onInputChange("numberOfEmployees", e.target.value)}
           onBlur={() => onBlur("numberOfEmployees")}
           className={cn(
-            touched.step1.numberOfEmployees && errors.numberOfEmployees && "border-error focus-visible:ring-error placeholder:text-error"
+            touched.step1.numberOfEmployees &&
+              errors.numberOfEmployees &&
+              "border-error focus-visible:ring-error placeholder:text-error",
           )}
         />
         {touched.step1.numberOfEmployees && errors.numberOfEmployees && (
           <FormError>{errors.numberOfEmployees}</FormError>
         )}
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="coverageLevel">
           <div className="flex items-center gap-2.5 tracking-wide">
@@ -83,9 +90,18 @@ export function Step1Form({
                   <p className="text-subtitle1">Уровень покрытия</p>
                   <br />
                   <ul>
-                    <li>- Базовый: основное покрытие, включая обязательные медицинские услуги</li>
-                    <li>- Комфорт: Расширенная помощь, включая амбулаторное лечение и доп. услуги</li>
-                    <li>- Премиум: Полный пакет с приоритетным обслуживанием и доп. опциями</li>
+                    <li>
+                      - Базовый: основное покрытие, включая обязательные
+                      медицинские услуги
+                    </li>
+                    <li>
+                      - Комфорт: Расширенная помощь, включая амбулаторное
+                      лечение и доп. услуги
+                    </li>
+                    <li>
+                      - Премиум: Полный пакет с приоритетным обслуживанием и
+                      доп. опциями
+                    </li>
                   </ul>
                 </TooltipContent>
               </Tooltip>
@@ -94,7 +110,9 @@ export function Step1Form({
         </Label>
         <div
           className={cn(
-            touched.step1.coverageLevel && errors.coverageLevel && "[&_input]:border-error [&_input]:focus-visible:ring-error [&_input]:placeholder:text-error"
+            touched.step1.coverageLevel &&
+              errors.coverageLevel &&
+              "[&_input]:border-error [&_input]:focus-visible:ring-error [&_input]:placeholder:text-error",
           )}
         >
           <Select
@@ -108,7 +126,7 @@ export function Step1Form({
           <FormError>{errors.coverageLevel}</FormError>
         )}
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="selectedCities">
           <div className="flex items-center gap-2.5 tracking-wide">
@@ -118,10 +136,13 @@ export function Step1Form({
         </Label>
         <div
           className={cn(
-            touched.step1.selectedCities && errors.selectedCities && "[&_div]:border-error [&_div]:focus-within:ring-error [&_input]:placeholder:text-error"
+            touched.step1.selectedCities &&
+              errors.selectedCities &&
+              "[&_div]:border-error [&_div]:focus-within:ring-error [&_input]:placeholder:text-error",
           )}
         >
           <MultiSelect
+            closeOnSelect
             options={cities}
             value={selectedCities}
             onChange={onCitiesChange}
@@ -138,4 +159,3 @@ export function Step1Form({
     </div>
   );
 }
-

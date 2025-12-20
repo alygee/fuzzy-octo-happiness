@@ -32,7 +32,7 @@ export function StepNavigation({
           variant="solid"
           size="large"
           onClick={onNext}
-          disabled={!isValid || isLoading}
+          disabled={isLoading}
         >
           {isLoading ? (
             <>
