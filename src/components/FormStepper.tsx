@@ -205,6 +205,20 @@ export function FormStepper() {
     }
   };
 
+  const handleBack = () => {
+    // Если текущий шаг - второй, то при клике Назад нужно перейти на шаг 1
+    if (currentStep === 2) {
+      setCurrentStep(1);
+      return;
+    }
+
+    // Если открыта форма OrderForm или CallbackForm, то при клике Назад нужно перейти на шаг 2
+    if (currentStep === 3 && (step3Mode === "order" || step3Mode === "callback")) {
+      setCurrentStep(2);
+      return;
+    }
+  };
+
   const handleRecalculate = async () => {
     // Проверяем валидность данных перед запросом
     if (!isStepValid(1, formData, errors, coverageLevel, selectedCities)) {
@@ -399,7 +413,11 @@ export function FormStepper() {
 
   return (
     <div className="flex flex-col gap-5">
-      <StepNavigation />
+      <StepNavigation 
+        currentStep={currentStep}
+        step3Mode={step3Mode}
+        onBack={handleBack}
+      />
       <div className="w-full max-w-5xl mx-auto">
         <div className="space-y-2 mb-6">
           <div>
