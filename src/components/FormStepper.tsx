@@ -7,7 +7,6 @@ import type { FormData, TouchedFields, Step3Mode } from "@/types/form";
 import { TOTAL_STEPS, cities } from "@/constants/form";
 import type { MultiSelectOption } from "@/components/ui/multi-select";
 import {
-  StepIndicator,
   Step1Form,
   Step2Form,
   Step3Form,
@@ -22,6 +21,7 @@ import {
   isStepValid,
 } from "@/utils/validation";
 import { fetchFilterData } from "@/api/filter";
+import { Button } from "./ui/button";
 
 export function FormStepper() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -398,47 +398,51 @@ export function FormStepper() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <StepIndicator currentStep={currentStep} />
-      <Typography className="text-h6 mb-1.5">{getStepTitle()}</Typography>
-      <Progress
-        totalSteps={TOTAL_STEPS}
-        currentStep={currentStep}
-        className="mb-6"
-      />
-
-      {(isLoading && currentStep === 1) || isLoadingRecalculate ? (
-        <LoadingScreen />
-      ) : currentStep === 1 ? (
-        <div className="flex flex-col md:flex-row gap-4">
-          <Card className="w-full md:w-1/2">
-            <CardContent>
-              <div className="space-y-2">
-                {renderStepContent()}
-                <StepNavigation
-                  currentStep={currentStep}
-                  isLoading={isLoading}
-                  isValid={isStepValid(
-                    currentStep,
-                    formData,
-                    errors,
-                    coverageLevel,
-                    selectedCities,
-                  )}
-                  onPrevious={handlePrevious}
-                  onNext={handleNext}
-                  onSubmit={handleSubmit}
-                />
-              </div>
-            </CardContent>
-          </Card>
-          <OfferCard />
+    <div className="flex flex-col gap-5">
+      <StepNavigation />
+      <div className="w-full max-w-5xl mx-auto">
+        <div className="space-y-2 mb-6">
+          <div>
+            <Typography variant="h4" className="text-primary">
+              Получите выгодные предложения по ДМС
+            </Typography>
+            <Typography variant="body2" className="text-text-secondary">
+              Заполните данные о компании, и мы предложим уникальный вариант под
+              ваши требования
+            </Typography>
+          </div>
+          <Typography className="text-h6">{getStepTitle()}</Typography>
+          <Progress totalSteps={TOTAL_STEPS} currentStep={currentStep} />
         </div>
-      ) : currentStep === 2 ? (
-        <div className="space-y-2">{renderStepContent()}</div>
-      ) : (
-        renderStepContent()
-      )}
+
+        {(isLoading && currentStep === 1) || isLoadingRecalculate ? (
+          <LoadingScreen />
+        ) : currentStep === 1 ? (
+          <div className="flex flex-col md:flex-row gap-4 mt-6">
+            <Card className="w-full md:w-1/2">
+              <CardContent>
+                <div className="space-y-8">
+                  {renderStepContent()}
+                  <Button
+                    className="w-full text-white"
+                    variant="solid"
+                    size="large"
+                    onClick={handleNext}
+                    disabled={isLoading}
+                  >
+                    Далее
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <OfferCard />
+          </div>
+        ) : currentStep === 2 ? (
+          <div className="space-y-2">{renderStepContent()}</div>
+        ) : (
+          renderStepContent()
+        )}
+      </div>
     </div>
   );
 }

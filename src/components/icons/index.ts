@@ -6,6 +6,8 @@ export { CallIcon } from "./CallIcon";
 export { InfoIcon } from "./InfoIcon";
 export { ArrowDownIcon } from "./ArrowDownIcon";
 export { ArrowUpIcon } from "./ArrowUpIcon";
+export { ArrowBackIcon } from "./ArrowBackIcon";
+export { CloseIcon } from "./CloseIcon";
 export { CirclePlusIcon } from "./CirclePlusIcon";
 export { CircleMinusIcon } from "./CircleMinusIcon";
 export { FilterIcon } from "./FilterIcon";

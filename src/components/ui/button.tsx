@@ -29,8 +29,8 @@ const buttonVariants = cva(
           "border border-warning bg-transparent text-warning hover:bg-warning-4p",
 
         // Text - текстовый вариант
-        text: "bg-transparent text-primary hover:bg-primary-4p",
-        "text-secondary": "bg-transparent text-secondary hover:bg-secondary-4p",
+        text: "bg-transparent text-primary hover:bg-primary-20p",
+        "text-secondary": "bg-transparent text-secondary hover:bg-gray-200",
         "text-error": "bg-transparent text-error hover:bg-error-4p",
         "text-success": "bg-transparent text-success hover:bg-success-4p",
         "text-warning": "bg-transparent text-warning hover:bg-warning-4p",
@@ -48,6 +48,7 @@ const buttonVariants = cva(
         small: "h-10 rounded-[32px] px-6 py-2 text-body2 gap-2",
         medium: "h-12 rounded-[40px] px-8 py-3 text-body1 gap-2",
         large: "h-14 rounded-[64px] px-9 py-4 text-body1 gap-2",
+        mediumSquare: "h-12 rounded-xl p-4 text-body1 gap-2",
         // Обратная совместимость
         default: "h-12 rounded-[40px] px-8 py-3 text-body1 gap-2",
         sm: "h-10 rounded-[32px] px-6 py-2 text-body2 gap-2",

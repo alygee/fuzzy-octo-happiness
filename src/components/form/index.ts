@@ -1,4 +1,3 @@
-export { StepIndicator } from "./StepIndicator";
 export { Step1Form } from "./Step1Form";
 export { Step2Form } from "./Step2Form";
 export { Step3Form } from "./Step3Form";

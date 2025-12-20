@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Loader } from "@/components/ui/loader";
-import { TOTAL_STEPS } from "@/constants/form";
+import { ArrowBackIcon } from "../icons/ArrowBackIcon";
+import { Typography } from "../ui/typography";
+import { CloseIcon } from "../icons/CloseIcon";
 
 interface StepNavigationProps {
   currentStep: number;
@@ -11,49 +12,16 @@ interface StepNavigationProps {
   onSubmit: () => void;
 }
 
-export function StepNavigation({
-  currentStep,
-  isLoading,
-  isValid,
-  onPrevious,
-  onNext,
-  onSubmit,
-}: StepNavigationProps) {
+export function StepNavigation() {
   return (
-    <div className="flex justify-between pt-4">
-      {currentStep !== 1 && (
-        <Button variant="text" size="large" onClick={onPrevious}>
-          Назад
-        </Button>
-      )}
-      {currentStep < TOTAL_STEPS ? (
-        <Button
-          className="w-full text-white"
-          variant="solid"
-          size="large"
-          onClick={onNext}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Loader size={20} className="mr-2" />
-              Загрузка...
-            </>
-          ) : (
-            'Далее'
-          )}
-        </Button>
-      ) : (
-        <Button
-          variant="solid"
-          size="large"
-          onClick={onSubmit}
-          disabled={!isValid}
-        >
-          Отправить
-        </Button>
-      )}
+    <div className="w-full max-w-6xl mx-auto flex justify-between">
+      <Button variant="text-secondary" size="mediumSquare">
+        <ArrowBackIcon />
+        <Typography className="text-primary">Назад</Typography>
+      </Button>
+      <Button variant="text-secondary" size="mediumSquare">
+        <CloseIcon />
+      </Button>
     </div>
   );
 }
-
