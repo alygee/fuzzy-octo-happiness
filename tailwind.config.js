@@ -75,7 +75,7 @@ export default {
           fontWeight: '450',
         }],
         // H6. Heading - мобильная версия
-        'h6': ['16px', {
+        'h6': ['18px', {
           lineHeight: '24px',
           letterSpacing: '0.6px',
           fontWeight: '500',

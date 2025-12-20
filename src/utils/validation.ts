@@ -1,4 +1,4 @@
-import type { FormData, FormErrors, TouchedFields } from "@/types/form";
+import type { FormData, FormErrors } from "@/types/form";
 
 export function validateStep1(
   formData: FormData,
@@ -17,6 +17,63 @@ export function validateStep1(
   
   if (selectedCities.length === 0) {
     errors.selectedCities = "Выберите хотя бы один регион";
+  }
+  
+  return errors;
+}
+
+export function validateStep3Order(
+  formData: FormData,
+  coverageLevel: string
+): FormErrors['step3'] {
+  const errors: FormErrors['step3'] = {};
+  
+  if (!formData.step3.organizationName.trim()) {
+    errors.organizationName = "Обязательное поле";
+  }
+  
+  if (!formData.step3.inn.trim()) {
+    errors.inn = "Обязательное поле";
+  } else if (!/^\d{10,12}$/.test(formData.step3.inn.trim())) {
+    errors.inn = "ИНН должен содержать 10 или 12 цифр";
+  }
+  
+  if (!formData.step3.responsiblePerson.trim()) {
+    errors.responsiblePerson = "Обязательное поле";
+  }
+  
+  if (!formData.step3.workEmail.trim()) {
+    errors.workEmail = "Обязательное поле";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.step3.workEmail.trim())) {
+    errors.workEmail = "Некорректный email";
+  }
+  
+  if (!formData.step3.workPhone.trim()) {
+    errors.workPhone = "Обязательное поле";
+  } else if (!/^\+7\s\d{3}\s\d{3}\s\d{4}$/.test(formData.step3.workPhone.trim())) {
+    errors.workPhone = "Некорректный номер телефона";
+  }
+  
+  if (!coverageLevel) {
+    errors.coverageLevel = "Выберите уровень покрытия";
+  }
+  
+  return errors;
+}
+
+export function validateStep3Callback(
+  formData: FormData
+): FormErrors['step3'] {
+  const errors: FormErrors['step3'] = {};
+  
+  if (!formData.step3.callbackName.trim()) {
+    errors.callbackName = "Обязательное поле";
+  }
+  
+  if (!formData.step3.callbackPhone.trim()) {
+    errors.callbackPhone = "Обязательное поле";
+  } else if (!/^\+7\s\d{3}\s\d{3}\s\d{4}$/.test(formData.step3.callbackPhone.trim())) {
+    errors.callbackPhone = "Некорректный номер телефона";
   }
   
   return errors;
@@ -45,7 +102,9 @@ export function isStepValid(
         formData.step2.position.trim() !== ""
       );
     case 3:
-      return formData.step3.message.trim() !== "";
+      // Валидация для step3 зависит от режима (order/callback)
+      // Проверка выполняется через validateStep3Order или validateStep3Callback
+      return true;
     default:
       return false;
   }

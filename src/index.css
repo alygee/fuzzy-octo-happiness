@@ -138,6 +138,68 @@
     font-weight: 400;
   }
 
+  /* Базовые стили типографики для мобильной версии (≤480px) */
+  .text-h1 {
+    font-size: 76px;
+    line-height: 80px;
+    letter-spacing: -1.0px;
+    font-weight: 500;
+  }
+  .text-h2 {
+    font-size: 48px;
+    line-height: 56px;
+    letter-spacing: -0.6px;
+    font-weight: 450;
+  }
+  .text-h3 {
+    font-size: 38px;
+    line-height: 48px;
+    letter-spacing: -0.2px;
+    font-weight: 500;
+  }
+  .text-h4 {
+    font-size: 28px;
+    line-height: 40px;
+    letter-spacing: 0.0px;
+    font-weight: 450;
+  }
+  .text-h5 {
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0.4px;
+    font-weight: 450;
+  }
+  .text-h6 {
+    font-size: 24px;
+    line-height: 24px;
+    letter-spacing: 0.6px;
+    font-weight: 500;
+  }
+  .text-subtitle1 {
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.4px;
+    font-weight: 450;
+  }
+  .text-subtitle2 {
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0.4px;
+    font-weight: 450;
+  }
+  .text-body1 {
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.0px;
+    font-weight: 400;
+  }
+  .text-body2 {
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: 0.0px;
+    font-weight: 400;
+  }
+
   /* Адаптивные стили типографики для >480px */
   @media (min-width: 481px) {
     .text-h1 {

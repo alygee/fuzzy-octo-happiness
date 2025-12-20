@@ -1,46 +1,49 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { ArrowDownIcon, ArrowUpIcon } from "@/components/icons"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { ArrowDownIcon, ArrowUpIcon } from "@/components/icons";
 
 export interface SelectOption {
-  value: string
-  label: string
+  value: string;
+  label: string;
 }
 
 export interface SelectProps {
-  options: SelectOption[]
-  value?: string
-  onChange?: (value: string) => void
-  placeholder?: string
-  className?: string
-  disabled?: boolean
-  searchable?: boolean
+  options: SelectOption[];
+  value?: string;
+  onChange?: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
+  searchable?: boolean;
 }
 
 export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
-  ({ 
-    options, 
-    value, 
-    onChange, 
-    placeholder = "Выберите...", 
-    className,
-    disabled = false,
-    searchable = true,
-    ...props 
-  }, ref) => {
-    const [isOpen, setIsOpen] = React.useState(false)
-    const [searchQuery, setSearchQuery] = React.useState("")
-    const inputRef = React.useRef<HTMLInputElement>(null)
-    const dropdownRef = React.useRef<HTMLDivElement>(null)
+  (
+    {
+      options,
+      value,
+      onChange,
+      placeholder = "Выберите...",
+      className,
+      disabled = false,
+      searchable = true,
+      ...props
+    },
+    ref,
+  ) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
 
-    const selectedOption = options.find(opt => opt.value === value)
+    const selectedOption = options.find((opt) => opt.value === value);
 
     const filteredOptions = React.useMemo(() => {
-      if (!searchable || !searchQuery) return options
-      return options.filter(opt =>
-        opt.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }, [options, searchQuery, searchable])
+      if (!searchable || !searchQuery) return options;
+      return options.filter((opt) =>
+        opt.label.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }, [options, searchQuery, searchable]);
 
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
@@ -50,51 +53,51 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
           inputRef.current &&
           !inputRef.current.contains(event.target as Node)
         ) {
-          setIsOpen(false)
-          setSearchQuery("")
+          setIsOpen(false);
+          setSearchQuery("");
         }
-      }
+      };
 
       if (isOpen) {
-        document.addEventListener("mousedown", handleClickOutside)
+        document.addEventListener("mousedown", handleClickOutside);
       }
 
       return () => {
-        document.removeEventListener("mousedown", handleClickOutside)
-      }
-    }, [isOpen])
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [isOpen]);
 
     React.useEffect(() => {
       if (isOpen && inputRef.current) {
-        inputRef.current.focus()
+        inputRef.current.focus();
       }
-    }, [isOpen])
+    }, [isOpen]);
 
     const handleSelect = (optionValue: string) => {
-      onChange?.(optionValue)
-      setIsOpen(false)
-      setSearchQuery("")
-    }
+      onChange?.(optionValue);
+      setIsOpen(false);
+      setSearchQuery("");
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value)
+      setSearchQuery(e.target.value);
       if (!isOpen) {
-        setIsOpen(true)
+        setIsOpen(true);
       }
-    }
+    };
 
     const handleInputFocus = () => {
-      setIsOpen(true)
-    }
+      setIsOpen(true);
+    };
 
     const handleToggle = () => {
       if (!disabled) {
-        setIsOpen(!isOpen)
+        setIsOpen(!isOpen);
         if (!isOpen) {
-          setSearchQuery("")
+          setSearchQuery("");
         }
       }
-    }
+    };
 
     return (
       <div ref={ref} className={cn("relative w-full", className)} {...props}>
@@ -103,19 +106,19 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
           <input
             ref={inputRef}
             type="text"
-            value={isOpen ? searchQuery : (selectedOption?.label || "")}
+            value={isOpen ? searchQuery : selectedOption?.label || ""}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             placeholder={placeholder}
             disabled={disabled}
             readOnly={!searchable}
             className={cn(
-              "flex w-full rounded-2xl border border-gray-300 bg-background px-4 py-4 text-input",
+              "flex w-full rounded-2xl border border-gray-300 bg-background-paper px-4 py-4 text-input",
               "ring-offset-background placeholder:text-muted-foreground",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:border-0",
               "disabled:cursor-not-allowed disabled:opacity-50",
               "pr-10",
-              className
+              className,
             )}
           />
           <button
@@ -127,7 +130,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
               "flex items-center justify-center",
               "text-foreground",
               "transition-colors",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
           >
             {isOpen ? (
@@ -146,7 +149,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
               "absolute z-50 mt-3 w-full",
               "bg-background-paper rounded-2xl",
               "shadow-elevation-3",
-              "max-h-60 overflow-auto"
+              "max-h-60 overflow-auto",
             )}
           >
             {filteredOptions.length > 0 ? (
@@ -160,7 +163,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                       "text-body1 text-text-primary",
                       "hover:bg-action-hover",
                       "transition-colors",
-                      value === option.value && "bg-action-selected"
+                      value === option.value && "bg-action-selected",
                     )}
                   >
                     {option.label}
@@ -175,9 +178,8 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
           </div>
         )}
       </div>
-    )
-  }
-)
+    );
+  },
+);
 
-Select.displayName = "Select"
-
+Select.displayName = "Select";

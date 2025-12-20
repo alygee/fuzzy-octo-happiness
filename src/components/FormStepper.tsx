@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Typography } from "./ui/typography";
 import type { FilterResponse, InsuranceRecord } from "@/types/api";
-import type { FormData, TouchedFields } from "@/types/form";
+import type { FormData, TouchedFields, Step3Mode } from "@/types/form";
 import { TOTAL_STEPS, cities } from "@/constants/form";
 import type { MultiSelectOption } from "@/components/ui/multi-select";
 import {
@@ -15,7 +15,7 @@ import {
   OfferCard,
   StepNavigation,
 } from "./form";
-import { validateStep1, isStepValid } from "@/utils/validation";
+import { validateStep1, validateStep3Order, validateStep3Callback, isStepValid } from "@/utils/validation";
 import { fetchFilterData } from "@/api/filter";
 
 export function FormStepper() {
@@ -30,6 +30,7 @@ export function FormStepper() {
     city: string;
     record: InsuranceRecord;
   } | null>(null);
+  const [step3Mode, setStep3Mode] = useState<Step3Mode>(null);
   const [citiesList, setCitiesList] = useState<MultiSelectOption[]>(cities);
   const [formData, setFormData] = useState<FormData>({
     step1: {
@@ -42,7 +43,14 @@ export function FormStepper() {
       position: "",
     },
     step3: {
-      message: "",
+      organizationName: "",
+      inn: "",
+      responsiblePerson: "",
+      workEmail: "",
+      workPhone: "",
+      serviceRegion: "",
+      callbackName: "",
+      callbackPhone: "",
     },
   });
   const [touched, setTouched] = useState<TouchedFields>({
@@ -54,6 +62,11 @@ export function FormStepper() {
   });
 
   const errors = validateStep1(formData, coverageLevel, selectedCities);
+  const step3Errors = step3Mode === "order" 
+    ? validateStep3Order(formData, coverageLevel)
+    : step3Mode === "callback"
+    ? validateStep3Callback(formData)
+    : null;
 
   const handleInputChange = (
     step: keyof FormData,
@@ -85,6 +98,23 @@ export function FormStepper() {
         [field]: true,
       },
     }));
+  };
+
+  const handleStep3Blur = (field: keyof NonNullable<TouchedFields["step3"]>) => {
+    setTouched((prev) => ({
+      ...prev,
+      step3: {
+        ...prev.step3,
+        [field]: true,
+      },
+    }));
+  };
+
+  const handleStep3CoverageLevelChange = (value: string) => {
+    setCoverageLevel(value);
+    if (!touched.step3?.coverageLevel) {
+      handleStep3Blur("coverageLevel");
+    }
   };
 
   const handleCoverageLevelChange = (value: string) => {
@@ -191,25 +221,36 @@ export function FormStepper() {
       city,
       record,
     });
+    setStep3Mode("order");
     setCurrentStep(3);
+  };
+
+  const handleCallback = () => {
+    setStep3Mode("callback");
+    setCurrentStep(3);
+  };
+
+  const handleBackToOffers = () => {
+    setCurrentStep(2);
+    setStep3Mode(null);
   };
 
   const handleCreateCity = (label: string): string => {
     // Генерировать value из label (lowercase с заменой пробелов на дефисы)
-    const value = label.toLowerCase().replace(/\s+/g, '-')
-    
+    const value = label.toLowerCase().replace(/\s+/g, "-");
+
     // Проверить, что такого value еще нет
-    if (!citiesList.some(c => c.value === value)) {
-      const newCity = { value, label }
-      setCitiesList([...citiesList, newCity])
+    if (!citiesList.some((c) => c.value === value)) {
+      const newCity = { value, label };
+      setCitiesList([...citiesList, newCity]);
       // Автоматически выбрать новый город
-      setSelectedCities([...selectedCities, value])
-      return value
+      setSelectedCities([...selectedCities, value]);
+      return value;
     }
-    
+
     // Если уже существует, вернуть существующий value
-    return value
-  }
+    return value;
+  };
 
   const handleSubmit = () => {
     console.log("Form submitted:", formData);
@@ -254,13 +295,25 @@ export function FormStepper() {
             onCitiesChange={handleCitiesChange}
             onRecalculate={handleRecalculate}
             onSelectOffer={handleSelectOffer}
+            onCallback={handleCallback}
           />
         );
       case 3:
         return (
           <Step3Form
             formData={formData}
+            step3Mode={step3Mode}
+            selectedOffer={selectedOffer}
+            coverageLevel={coverageLevel}
+            selectedCities={selectedCities}
+            numberOfEmployees={formData.step1.numberOfEmployees}
+            errors={step3Errors}
+            touched={touched.step3}
             onInputChange={handleStep3InputChange}
+            onCoverageLevelChange={handleStep3CoverageLevelChange}
+            onBlur={handleStep3Blur}
+            onSubmit={handleSubmit}
+            onBackToOffers={handleBackToOffers}
           />
         );
       default:
@@ -275,7 +328,7 @@ export function FormStepper() {
     if (currentStep === 2) {
       return "2. Выберите подходящее предложение";
     }
-    return "3. Завершение";
+    return "3. Оформление заявки";
   };
 
   return (
@@ -316,20 +369,9 @@ export function FormStepper() {
           <OfferCard />
         </div>
       ) : currentStep === 2 ? (
-        <div className="space-y-2">
-          {renderStepContent()}
-        </div>
+        <div className="space-y-2">{renderStepContent()}</div>
       ) : (
-        <div className="flex flex-col md:flex-row gap-4">
-          <Card className="w-full md:w-1/2">
-            <CardContent>
-              <div className="space-y-2">
-                {renderStepContent()}
-              </div>
-            </CardContent>
-          </Card>
-          <OfferCard />
-        </div>
+        renderStepContent()
       )}
     </div>
   );

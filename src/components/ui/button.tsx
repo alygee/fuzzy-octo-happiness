@@ -47,7 +47,7 @@ const buttonVariants = cva(
       size: {
         small: "h-10 rounded-[32px] px-6 py-2 text-body2 gap-2",
         medium: "h-12 rounded-[40px] px-8 py-3 text-body1 gap-2",
-        large: "h-14 rounded-[64px] px-8 py-4 text-body1 gap-2",
+        large: "h-14 rounded-[64px] px-9 py-4 text-body1 gap-2",
         // Обратная совместимость
         default: "h-12 rounded-[40px] px-8 py-3 text-body1 gap-2",
         sm: "h-10 rounded-[32px] px-6 py-2 text-body2 gap-2",

@@ -1,5 +1,6 @@
 import { Step1Form } from "./Step1Form";
 import { InsuranceCards } from "./InsuranceCards";
+import { CallbackCard } from "./CallbackCard";
 import type { FormData, TouchedFields, FormErrors } from "@/types/form";
 import type { FilterResponse, InsuranceRecord } from "@/types/api";
 import type { MultiSelectOption } from "@/components/ui/multi-select";
@@ -23,6 +24,7 @@ interface Step2FormProps {
   onCitiesChange: (value: string[]) => void;
   onRecalculate: () => void;
   onSelectOffer: (insurerName: string, city: string, record: InsuranceRecord) => void;
+  onCallback?: () => void;
 }
 
 export function Step2Form({
@@ -41,6 +43,7 @@ export function Step2Form({
   onCitiesChange,
   onRecalculate,
   onSelectOffer,
+  onCallback,
 }: Step2FormProps) {
   return (
     <div className="flex flex-col md:flex-row gap-6">
@@ -84,8 +87,9 @@ export function Step2Form({
       </div>
 
       {/* Карточки страховых компаний - 2/3 ширины */}
-      <div className="w-full md:w-2/3">
+      <div className="w-full md:w-2/3 space-y-4">
         <InsuranceCards apiData={apiData} onSelectOffer={onSelectOffer} />
+        <CallbackCard onCallback={onCallback} />
       </div>
     </div>
   );
