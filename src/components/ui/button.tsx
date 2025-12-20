@@ -18,15 +18,15 @@ const buttonVariants = cva(
 
         // Contained - с границей
         contained:
-          "border-2 border-primary bg-transparent text-primary hover:bg-primary-4p",
+          "border border-primary bg-transparent text-primary hover:bg-primary-4p",
         "contained-secondary":
-          "border-2 border-secondary bg-transparent text-secondary hover:bg-secondary-4p",
+          "border border-secondary bg-transparent text-secondary hover:bg-secondary-4p",
         "contained-error":
-          "border-2 border-error bg-transparent text-error hover:bg-error-4p",
+          "border border-error bg-transparent text-error hover:bg-error-4p",
         "contained-success":
-          "border-2 border-success bg-transparent text-success hover:bg-success-4p",
+          "border border-success bg-transparent text-success hover:bg-success-4p",
         "contained-warning":
-          "border-2 border-warning bg-transparent text-warning hover:bg-warning-4p",
+          "border border-warning bg-transparent text-warning hover:bg-warning-4p",
 
         // Text - текстовый вариант
         text: "bg-transparent text-primary hover:bg-primary-4p",
@@ -39,7 +39,7 @@ const buttonVariants = cva(
         default: "bg-primary text-white hover:bg-primary-dark",
         destructive: "bg-error text-white hover:bg-error-dark",
         outline:
-          "border-2 border-primary bg-transparent text-primary hover:bg-primary-4p",
+          "border border-primary bg-transparent text-primary hover:bg-primary-4p",
         secondary: "bg-secondary text-white hover:bg-secondary-dark",
         ghost: "bg-transparent text-primary hover:bg-primary-4p",
         link: "bg-transparent text-primary underline-offset-4 hover:underline",
@@ -87,7 +87,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size }), className)}
         ref={ref}
         {...props}
       >

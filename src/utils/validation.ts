@@ -1,4 +1,5 @@
 import type { FormData, FormErrors } from "@/types/form";
+import { getPhoneDigits } from "@/utils/phoneMask";
 
 export function validateStep1(
   formData: FormData,
@@ -51,8 +52,11 @@ export function validateStep3Order(
   
   if (!formData.step3.workPhone.trim()) {
     errors.workPhone = "Обязательное поле";
-  } else if (!/^\+7\s\d{3}\s\d{3}\s\d{4}$/.test(formData.step3.workPhone.trim())) {
-    errors.workPhone = "Некорректный номер телефона";
+  } else {
+    const phoneDigits = getPhoneDigits(formData.step3.workPhone.trim());
+    if (phoneDigits.length !== 11 || !phoneDigits.startsWith('7')) {
+      errors.workPhone = "Некорректный номер телефона";
+    }
   }
   
   if (!coverageLevel) {
@@ -77,8 +81,11 @@ export function validateStep3Callback(
   
   if (!formData.step3.callbackPhone.trim()) {
     errors.callbackPhone = "Обязательное поле";
-  } else if (!/^\+7\s\d{3}\s\d{3}\s\d{4}$/.test(formData.step3.callbackPhone.trim())) {
-    errors.callbackPhone = "Некорректный номер телефона";
+  } else {
+    const phoneDigits = getPhoneDigits(formData.step3.callbackPhone.trim());
+    if (phoneDigits.length !== 11 || !phoneDigits.startsWith('7')) {
+      errors.callbackPhone = "Некорректный номер телефона";
+    }
   }
   
   return errors;

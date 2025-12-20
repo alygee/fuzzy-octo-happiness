@@ -1,11 +1,11 @@
-import * as React from "react"
+import * as React from "react";
 
-interface ContractIconProps extends React.SVGProps<SVGSVGElement> {
-  size?: number
-  color?: string
+interface ContactIconProps extends React.SVGProps<SVGSVGElement> {
+  size?: number;
+  color?: string;
 }
 
-export const ContractIcon = React.forwardRef<SVGSVGElement, ContractIconProps>(
+export const ContactIcon = React.forwardRef<SVGSVGElement, ContactIconProps>(
   ({ size = 22, color = "#4DA4E3", ...props }, ref) => {
     return (
       <svg
@@ -40,9 +40,8 @@ export const ContractIcon = React.forwardRef<SVGSVGElement, ContractIconProps>(
           fill={color}
         />
       </svg>
-    )
-  }
-)
+    );
+  },
+);
 
-ContractIcon.displayName = "ContractIcon"
-
+ContactIcon.displayName = "ContactIcon";

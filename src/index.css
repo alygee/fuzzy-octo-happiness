@@ -123,18 +123,18 @@
     letter-spacing: 0.4px;
     font-weight: 400;
   }
-  
+
   .text-input {
     font-size: 16px;
     line-height: 16px;
-    letter-spacing: 0.0px;
+    letter-spacing: 0px;
     font-weight: 400;
   }
-  
+
   .text-overline {
     font-size: 13px;
     line-height: 16px;
-    letter-spacing: 1.0px;
+    letter-spacing: 1px;
     font-weight: 400;
   }
 
@@ -142,7 +142,7 @@
   .text-h1 {
     font-size: 76px;
     line-height: 80px;
-    letter-spacing: -1.0px;
+    letter-spacing: -1px;
     font-weight: 500;
   }
   .text-h2 {
@@ -160,7 +160,7 @@
   .text-h4 {
     font-size: 28px;
     line-height: 40px;
-    letter-spacing: 0.0px;
+    letter-spacing: 0px;
     font-weight: 450;
   }
   .text-h5 {
@@ -190,13 +190,13 @@
   .text-body1 {
     font-size: 16px;
     line-height: 24px;
-    letter-spacing: 0.0px;
+    letter-spacing: 0px;
     font-weight: 400;
   }
   .text-body2 {
     font-size: 14px;
     line-height: 16px;
-    letter-spacing: 0.0px;
+    letter-spacing: 0px;
     font-weight: 400;
   }
 
@@ -205,7 +205,7 @@
     .text-h1 {
       font-size: 96px;
       line-height: 104px;
-      letter-spacing: -1.0px;
+      letter-spacing: -1px;
       font-weight: 500;
     }
     .text-h2 {
@@ -221,9 +221,9 @@
       font-weight: 500;
     }
     .text-h4 {
-      font-size: 34px;
+      font-size: 32px;
       line-height: 48px;
-      letter-spacing: 0.0px;
+      letter-spacing: 0px;
       font-weight: 450;
     }
     .text-h5 {
@@ -253,13 +253,13 @@
     .text-body1 {
       font-size: 18px;
       line-height: 24px;
-      letter-spacing: 0.0px;
+      letter-spacing: 0px;
       font-weight: 400;
     }
     .text-body2 {
       font-size: 16px;
       line-height: 24px;
-      letter-spacing: 0.0px;
+      letter-spacing: 0px;
       font-weight: 400;
     }
   }
@@ -271,6 +271,6 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Jost', system-ui, sans-serif;
+    font-family: "Jost", system-ui, sans-serif;
   }
 }

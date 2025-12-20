@@ -32,6 +32,7 @@ export function FormStepper() {
   } | null>(null);
   const [step3Mode, setStep3Mode] = useState<Step3Mode>(null);
   const [citiesList, setCitiesList] = useState<MultiSelectOption[]>(cities);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     step1: {
       numberOfEmployees: "",
@@ -263,7 +264,49 @@ export function FormStepper() {
     console.log("Form submitted:", formData);
     console.log("Selected offer:", selectedOffer);
     // Здесь можно добавить отправку данных на сервер
-    alert("Форма успешно отправлена!");
+    setIsSubmitted(true);
+  };
+
+  const handleResetForm = () => {
+    setCurrentStep(1);
+    setSelectedCities([]);
+    setCoverageLevel("Базовый");
+    setApiData(null);
+    setSelectedOffer(null);
+    setStep3Mode(null);
+    setFormData({
+      step1: {
+        numberOfEmployees: "",
+        email: "",
+        phone: "",
+      },
+      step2: {
+        company: "",
+        position: "",
+      },
+      step3: {
+        organizationName: "",
+        inn: "",
+        responsiblePerson: "",
+        workEmail: "",
+        workPhone: "",
+        serviceRegion: "",
+        callbackName: "",
+        callbackPhone: "",
+      },
+    });
+    setTouched({
+      step1: {
+        numberOfEmployees: false,
+        coverageLevel: false,
+        selectedCities: false,
+      },
+    });
+    setIsSubmitted(false);
+  };
+
+  const handleCloseSuccess = () => {
+    setIsSubmitted(false);
   };
 
   const renderStepContent = () => {
@@ -324,6 +367,9 @@ export function FormStepper() {
             onBlur={handleStep3Blur}
             onSubmit={handleSubmit}
             onBackToOffers={handleBackToOffers}
+            isSubmitted={isSubmitted}
+            onCloseSuccess={handleCloseSuccess}
+            onResetForm={handleResetForm}
           />
         );
       default:

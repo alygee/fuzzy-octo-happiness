@@ -13,6 +13,7 @@ import { getInsurerLogo } from "@/utils/insurerLogos";
 import { handlePhoneChange } from "@/utils/phoneMask";
 import { coverageLevels } from "@/constants/form";
 import { validateStep3Order } from "@/utils/validation";
+import { ContactIcon, InsPolicyIcon, CrowdIcon, Profile2Icon, MailOutlineIcon, CallIcon, ShieldIcon, LocationIcon } from "@/components/icons";
 
 interface OrderFormProps {
   formData: FormData;
@@ -117,7 +118,12 @@ export function OrderForm({
           <div className="space-y-4">
             <div className="flex gap-4">
               <div className="space-y-2 w-full md:w-1/2">
-                <Label htmlFor="organizationName">Название организации</Label>
+                <Label htmlFor="organizationName">
+                  <div className="flex items-center gap-2.5 tracking-wide">
+                    <ContactIcon className="ml-1" />
+                    <span>Название организации</span>
+                  </div>
+                </Label>
                 <Input
                   id="organizationName"
                   type="text"
@@ -137,7 +143,12 @@ export function OrderForm({
               </div>
 
               <div className="space-y-2 w-full md:w-1/2">
-                <Label htmlFor="inn">ИНН</Label>
+                <Label htmlFor="inn">
+                  <div className="flex items-center gap-2.5 tracking-wide">
+                    <InsPolicyIcon className="ml-1" />
+                    <span>ИНН</span>
+                  </div>
+                </Label>
                 <Input
                   id="inn"
                   type="text"
@@ -158,7 +169,10 @@ export function OrderForm({
             <div className="flex gap-4">
               <div className="space-y-2 w-full md:w-1/2">
                 <Label htmlFor="numberOfEmployees">
-                  Количество сотрудников
+                  <div className="flex items-center gap-2.5 tracking-wide">
+                    <CrowdIcon className="ml-1" />
+                    <span>Количество сотрудников</span>
+                  </div>
                 </Label>
                 <Input
                   id="numberOfEmployees"
@@ -169,7 +183,12 @@ export function OrderForm({
               </div>
 
               <div className="space-y-2 w-full md:w-1/2">
-                <Label htmlFor="responsiblePerson">ФИО ответственного</Label>
+                <Label htmlFor="responsiblePerson">
+                  <div className="flex items-center gap-2.5 tracking-wide">
+                    <Profile2Icon className="ml-1" />
+                    <span>ФИО ответственного</span>
+                  </div>
+                </Label>
                 <Input
                   id="responsiblePerson"
                   type="text"
@@ -191,7 +210,12 @@ export function OrderForm({
 
             <div className="flex gap-4">
               <div className="space-y-2 w-full md:w-1/2">
-                <Label htmlFor="workEmail">Рабочая почта</Label>
+                <Label htmlFor="workEmail">
+                  <div className="flex items-center gap-2.5 tracking-wide">
+                    <MailOutlineIcon className="ml-1" />
+                    <span>Рабочая почта</span>
+                  </div>
+                </Label>
                 <Input
                   id="workEmail"
                   type="email"
@@ -209,7 +233,12 @@ export function OrderForm({
               </div>
 
               <div className="space-y-2 w-full md:w-1/2">
-                <Label htmlFor="workPhone">Телефон</Label>
+                <Label htmlFor="workPhone">
+                  <div className="flex items-center gap-2.5 tracking-wide">
+                    <CallIcon className="ml-1" />
+                    <span>Телефон</span>
+                  </div>
+                </Label>
                 <Input
                   id="workPhone"
                   type="tel"
@@ -232,7 +261,12 @@ export function OrderForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coverageLevel">Уровень покрытия</Label>
+              <Label htmlFor="coverageLevel">
+                <div className="flex items-center gap-2.5 tracking-wide">
+                  <ShieldIcon className="ml-1" />
+                  <span>Уровень покрытия</span>
+                </div>
+              </Label>
               <Select
                 options={coverageLevels}
                 value={coverageLevel}
@@ -248,7 +282,12 @@ export function OrderForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="serviceRegion">Регион обслуживания</Label>
+              <Label htmlFor="serviceRegion">
+                <div className="flex items-center gap-2.5 tracking-wide">
+                  <LocationIcon className="ml-1" />
+                  <span>Регион обслуживания</span>
+                </div>
+              </Label>
               <MultiSelect
                 options={cities}
                 value={selectedCities}

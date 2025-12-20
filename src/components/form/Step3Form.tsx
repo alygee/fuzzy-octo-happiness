@@ -3,6 +3,7 @@ import type { InsuranceRecord } from "@/types/api";
 import type { MultiSelectOption } from "@/components/ui/multi-select";
 import { OrderForm } from "./OrderForm";
 import { CallbackForm } from "./CallbackForm";
+import { SuccessCard } from "./SuccessCard";
 
 interface Step3FormProps {
   formData: FormData;
@@ -25,6 +26,9 @@ interface Step3FormProps {
   onBlur?: (field: keyof NonNullable<TouchedFields['step3']>) => void;
   onSubmit: () => void;
   onBackToOffers?: () => void;
+  isSubmitted?: boolean;
+  onCloseSuccess?: () => void;
+  onResetForm?: () => void;
 }
 
 export function Step3Form({
@@ -44,9 +48,22 @@ export function Step3Form({
   onBlur,
   onSubmit,
   onBackToOffers,
+  isSubmitted,
+  onCloseSuccess,
+  onResetForm,
 }: Step3FormProps) {
   // Форма оформления
   if (step3Mode === "order" && selectedOffer) {
+    // Показываем карточку успеха после отправки формы
+    if (isSubmitted) {
+      return (
+        <SuccessCard
+          onClose={onCloseSuccess}
+          onReset={onResetForm}
+        />
+      );
+    }
+    
     return (
       <OrderForm
         formData={formData}

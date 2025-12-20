@@ -134,9 +134,9 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             )}
           >
             {isOpen ? (
-              <ArrowDownIcon className="h-2.5 w-2.5" />
-            ) : (
               <ArrowUpIcon className="h-2.5 w-2.5" />
+            ) : (
+              <ArrowDownIcon className="h-2.5 w-2.5" />
             )}
           </button>
         </div>
