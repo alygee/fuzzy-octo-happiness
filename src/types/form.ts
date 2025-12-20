@@ -21,6 +21,7 @@ export interface FormData {
     // Поля формы обратного звонка
     callbackName: string;
     callbackPhone: string;
+    isAgreed: boolean;
   };
 }
 
@@ -40,6 +41,7 @@ export interface TouchedFields {
     serviceRegion?: boolean;
     callbackName?: boolean;
     callbackPhone?: boolean;
+    isAgreed?: boolean;
   };
 }
 
@@ -59,6 +61,7 @@ export interface FormErrors {
     serviceRegion?: string;
     callbackName?: string;
     callbackPhone?: string;
+    isAgreed?: string;
   };
 }
 

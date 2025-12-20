@@ -93,6 +93,9 @@ export function Step3Form({
         onInputChange={onInputChange}
         onSubmit={onSubmit}
         onBackToOffers={onBackToOffers}
+        errors={errors || undefined}
+        touched={touched}
+        onBlur={onBlur}
       />
     );
   }

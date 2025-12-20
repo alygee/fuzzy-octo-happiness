@@ -16,15 +16,17 @@ export function CallbackCard({ onCallback }: CallbackCardProps) {
             Не нашли, что хотели? Мы перезвоним вам
           </Typography>
         </div>
-        <div className="text-center md:text-right">
-          <Button
-            className="text-white"
-            variant="solid-secondary"
-            size="large"
-            onClick={onCallback}
-          >
-            Заказать обратный звонок
-          </Button>
+        <div className="space-y-4">
+          <div className="text-center md:text-right">
+            <Button
+              className="text-white"
+              variant="solid-secondary"
+              size="large"
+              onClick={onCallback}
+            >
+              Заказать обратный звонок
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

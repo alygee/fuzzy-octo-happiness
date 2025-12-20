@@ -15,7 +15,12 @@ import {
   OfferCard,
   StepNavigation,
 } from "./form";
-import { validateStep1, validateStep3Order, validateStep3Callback, isStepValid } from "@/utils/validation";
+import {
+  validateStep1,
+  validateStep3Order,
+  validateStep3Callback,
+  isStepValid,
+} from "@/utils/validation";
 import { fetchFilterData } from "@/api/filter";
 
 export function FormStepper() {
@@ -52,6 +57,7 @@ export function FormStepper() {
       serviceRegion: "",
       callbackName: "",
       callbackPhone: "",
+      isAgreed: false,
     },
   });
   const [touched, setTouched] = useState<TouchedFields>({
@@ -63,16 +69,17 @@ export function FormStepper() {
   });
 
   const errors = validateStep1(formData, coverageLevel, selectedCities);
-  const step3Errors = step3Mode === "order" 
-    ? validateStep3Order(formData, coverageLevel, selectedCities)
-    : step3Mode === "callback"
-    ? validateStep3Callback(formData)
-    : null;
+  const step3Errors =
+    step3Mode === "order"
+      ? validateStep3Order(formData, coverageLevel, selectedCities)
+      : step3Mode === "callback"
+        ? validateStep3Callback(formData)
+        : null;
 
   const handleInputChange = (
     step: keyof FormData,
     field: string,
-    value: string,
+    value: string | boolean,
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -87,7 +94,7 @@ export function FormStepper() {
     handleInputChange("step1", field, value);
   };
 
-  const handleStep3InputChange = (field: string, value: string) => {
+  const handleStep3InputChange = (field: string, value: string | boolean) => {
     handleInputChange("step3", field, value);
   };
 
@@ -101,7 +108,9 @@ export function FormStepper() {
     }));
   };
 
-  const handleStep3Blur = (field: keyof NonNullable<TouchedFields["step3"]>) => {
+  const handleStep3Blur = (
+    field: keyof NonNullable<TouchedFields["step3"]>,
+  ) => {
     setTouched((prev) => ({
       ...prev,
       step3: {
@@ -293,6 +302,7 @@ export function FormStepper() {
         serviceRegion: "",
         callbackName: "",
         callbackPhone: "",
+        isAgreed: false,
       },
     });
     setTouched({
@@ -390,7 +400,7 @@ export function FormStepper() {
   return (
     <div className="w-full max-w-6xl mx-auto">
       <StepIndicator currentStep={currentStep} />
-      <Typography className="text-h6">{getStepTitle()}</Typography>
+      <Typography className="text-h6 mb-1.5">{getStepTitle()}</Typography>
       <Progress
         totalSteps={TOTAL_STEPS}
         currentStep={currentStep}

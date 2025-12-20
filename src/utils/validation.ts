@@ -88,6 +88,10 @@ export function validateStep3Callback(
     }
   }
   
+  if (!formData.step3.isAgreed) {
+    errors.isAgreed = "Необходимо согласие на обработку персональных данных";
+  }
+  
   return errors;
 }
 
