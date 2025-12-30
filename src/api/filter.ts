@@ -1,4 +1,5 @@
-import type { FilterResponse } from "@/types/api";
+import type { FilterResponse } from '@/types/api';
+import { API_CONFIG } from '@/config/api';
 
 interface FilterParams {
   cities?: string[];
@@ -7,27 +8,31 @@ interface FilterParams {
 }
 
 export async function fetchFilterData(
-  params: FilterParams,
+  params: FilterParams
 ): Promise<FilterResponse> {
   const urlParams = new URLSearchParams();
 
   if (params.cities && params.cities.length > 0) {
-    urlParams.append("cities", params.cities.join(","));
+    urlParams.append('cities', params.cities.join(','));
   }
   if (params.level) {
-    urlParams.append("level", params.level);
+    urlParams.append('levels', params.level);
   }
   if (params.count) {
-    urlParams.append("count", params.count);
+    urlParams.append('count', params.count);
   }
 
   const queryString = urlParams.toString();
-  const url = queryString ? `/api/filter?${queryString}` : "/api/filter";
+  const endpoint = queryString
+    ? `wp-json/dmc/v1/filter?${queryString}`
+    : 'wp-json/dmc/v1/filter';
+  
+  const url = API_CONFIG.getApiUrl(endpoint);
 
   const response = await fetch(url, {
-    method: "GET",
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 
@@ -38,7 +43,3 @@ export async function fetchFilterData(
   const data: FilterResponse = await response.json();
   return data;
 }
-
-
-
-

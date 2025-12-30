@@ -7,6 +7,7 @@ export { InfoIcon } from "./InfoIcon";
 export { ArrowDownIcon } from "./ArrowDownIcon";
 export { ArrowUpIcon } from "./ArrowUpIcon";
 export { ArrowBackIcon } from "./ArrowBackIcon";
+export { ChevronDownIcon } from "./ChevronDownIcon";
 export { CloseIcon } from "./CloseIcon";
 export { CirclePlusIcon } from "./CirclePlusIcon";
 export { CircleMinusIcon } from "./CircleMinusIcon";

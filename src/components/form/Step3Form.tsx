@@ -20,13 +20,15 @@ interface Step3FormProps {
   onCreateCity?: (label: string) => string | null;
   errors?: FormErrors['step3'] | null;
   touched?: TouchedFields['step3'];
-  onInputChange: (field: string, value: string) => void;
+  onInputChange: (field: string, value: string | boolean) => void;
   onCoverageLevelChange?: (value: string) => void;
   onCitiesChange?: (value: string[]) => void;
   onBlur?: (field: keyof NonNullable<TouchedFields['step3']>) => void;
   onSubmit: () => void;
   onBackToOffers?: () => void;
   isSubmitted?: boolean;
+  isSubmitting?: boolean;
+  submitError?: string | null;
   onCloseSuccess?: () => void;
   onResetForm?: () => void;
 }
@@ -49,6 +51,8 @@ export function Step3Form({
   onSubmit,
   onBackToOffers,
   isSubmitted,
+  isSubmitting,
+  submitError,
   onCloseSuccess,
   onResetForm,
 }: Step3FormProps) {
@@ -81,12 +85,24 @@ export function Step3Form({
         onCitiesChange={onCitiesChange}
         onBlur={onBlur}
         onSubmit={onSubmit}
+        isSubmitting={isSubmitting}
+        submitError={submitError}
       />
     );
   }
 
   // Форма обратного звонка
   if (step3Mode === "callback") {
+    // Показываем карточку успеха после отправки формы
+    if (isSubmitted) {
+      return (
+        <SuccessCard
+          onClose={onCloseSuccess}
+          onReset={onResetForm}
+        />
+      );
+    }
+    
     return (
       <CallbackForm
         formData={formData}
@@ -96,6 +112,8 @@ export function Step3Form({
         errors={errors || undefined}
         touched={touched}
         onBlur={onBlur}
+        isSubmitting={isSubmitting}
+        submitError={submitError}
       />
     );
   }

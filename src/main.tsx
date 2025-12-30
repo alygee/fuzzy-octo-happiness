@@ -22,6 +22,9 @@ function initInssmartForm(containerId: string = 'inssmart-form-container') {
 declare global {
   interface Window {
     initInssmartForm: (containerId?: string) => void
+    InssmartForm?: {
+      initInssmartForm: (containerId?: string) => void
+    }
   }
 }
 
@@ -45,4 +48,10 @@ if (typeof window !== 'undefined') {
 
 // Для IIFE формата нужно экспортировать функцию
 export { initInssmartForm }
+
+// Убеждаемся, что функция доступна глобально для WordPress
+if (typeof window !== 'undefined') {
+  // Дополнительная проверка для случаев, когда скрипт загружается асинхронно
+  window.InssmartForm = { initInssmartForm }
+}
 
