@@ -80,6 +80,7 @@ export function FormStepper() {
   useEffect(() => {
     const params = getUrlParams();
     setUrlParams(params);
+    console.log('url params: ', params);
   }, []);
 
   const errors = validateStep1(formData, coverageLevel, selectedCities);
@@ -495,8 +496,6 @@ export function FormStepper() {
           </Typography>
           <Progress totalSteps={TOTAL_STEPS} currentStep={currentStep} />
         </div>
-
-        <pre>{JSON.stringify(urlParams, null, 2)}</pre>
 
         {(isLoading && currentStep === 1) || isLoadingRecalculate ? (
           <LoadingScreen />
