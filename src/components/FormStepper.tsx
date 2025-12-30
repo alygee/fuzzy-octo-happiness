@@ -496,6 +496,8 @@ export function FormStepper() {
           <Progress totalSteps={TOTAL_STEPS} currentStep={currentStep} />
         </div>
 
+        <pre>{JSON.stringify(urlParams, null, 2)}</pre>
+
         {(isLoading && currentStep === 1) || isLoadingRecalculate ? (
           <LoadingScreen />
         ) : currentStep === 1 ? (
